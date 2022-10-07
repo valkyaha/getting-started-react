@@ -33,9 +33,9 @@ class Card extends React.Component {
     }
 }
 
-class Form extends React.Component{
+class Form extends React.Component {
     render() {
-        return(
+        return (
             <form action="">
                 <input type="text" placeholder="GitHub username"/>
                 <button>Add card</button>
@@ -45,12 +45,17 @@ class Form extends React.Component{
 }
 
 class App extends React.Component {
+
+    state = {
+        profiles: testData,
+    }
+
     render() {
         return (
             <div>
                 <div className="header">{this.props.title}</div>
                 <Form/>
-                <CardList profiles={testData}/>
+                <CardList profiles={this.state.profiles}/>
             </div>
         );
     }
