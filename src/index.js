@@ -3,8 +3,25 @@ import ReactDOM from 'react-dom/client';
 import './index.css';
 import reportWebVitals from './reportWebVitals';
 
+const PlayNumber = props => (
+    <button key={props.number} className="number" onClick={() => console.log('Num', props.number)}>
+        {props.number}
+    </button>
+);
+
+const StarsDisplay = props => (
+    <>
+        {
+            utils.range(1, props.stars)
+                .map(starId =>
+                    <div key={starId} className="star"/>
+                )
+        }
+    </>
+);
+
 const StarMatch = () => {
-    const [stars, setStars] = useState(utils.random(1,9));
+    const [stars, setStars] = useState(utils.random(1, 9));
 
 
     return (
@@ -14,10 +31,14 @@ const StarMatch = () => {
             </div>
             <div className="body">
                 <div className="left">
-                    {utils.range(1, stars).map(starId => <div key={starId} className="star" /> )}
+                    <StarsDisplay stars={stars}/>
                 </div>
                 <div className="right">
-                    {utils.range(1, 9).map(number => <button key={number} className="number"> {number} </button> )}
+                    {
+                        utils.range(1, 9).map(number =>
+                            <PlayNumber number={number}/>
+                        )
+                    }
                 </div>
             </div>
             <div className="timer">Time Remaining: 10</div>
@@ -39,7 +60,7 @@ const utils = {
     sum: arr => arr.reduce((acc, curr) => acc + curr, 0),
 
     // create an array of numbers between min and max (edges included)
-    range: (min, max) => Array.from({ length: max - min + 1 }, (_, i) => min + i),
+    range: (min, max) => Array.from({length: max - min + 1}, (_, i) => min + i),
 
     // pick a random number between min and max (edges included)
     random: (min, max) => min + Math.floor(Math.random() * (max - min + 1)),
@@ -67,7 +88,7 @@ const utils = {
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
     <React.StrictMode>
-        <StarMatch />
+        <StarMatch/>
     </React.StrictMode>
 );
 
