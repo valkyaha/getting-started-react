@@ -1,89 +1,73 @@
-import React from 'react';
+import React, {useState, useTransition} from 'react';
 import ReactDOM from 'react-dom/client';
 import './index.css';
 import reportWebVitals from './reportWebVitals';
-import axios from 'axios';
 
-const CardList = (props) => (
-    <div>
-        {props.profiles.map(profile => <Card key={profile.id} {...profile}/>)}
-    </div>
-)
+const StarMatch = () => {
+    const [stars, setStars] = useState(utils.random(1,9));
 
-class Card extends React.Component {
-    render() {
-        const profile = this.props;
-        return (
-            <div className="github-profile" style={{margin: '1rem'}}>
-                <img src={profile.avatar_url} alt=""/>
-                <div className="info" style={{display: "inline-block", marginLeft: 10}}>
-                    <div className="name" style={{fontSize: '125%'}}> {profile.name}</div>
-                    <div className="company"> {profile.company}</div>
+
+    return (
+        <div className="game">
+            <div className="help">
+                Pick 1 or more numbers that sum to the number of stars
+            </div>
+            <div className="body">
+                <div className="left">
+                    {utils.range(1, stars).map(starId => <div key={starId} className="star" /> )}
+                </div>
+                <div className="right">
+                    {utils.range(1, 9).map(number => <button key={number} className="number"> {number} </button> )}
                 </div>
             </div>
-        );
-    }
-}
+            <div className="timer">Time Remaining: 10</div>
+        </div>
+    );
+};
 
-class Form extends React.Component {
-    state = {
-        userName: '',
-    };
+// Color Theme
+const colors = {
+    available: 'lightgray',
+    used: 'lightgreen',
+    wrong: 'lightcoral',
+    candidate: 'deepskyblue',
+};
 
-    handleSubmit = async (event) => {
-        event.preventDefault();
-        const response = await axios.get(`https://api.github.com/users/${this.state.userName}`)
-        this.props.onSubmit(response.data)
-        this.setState({userName: ''})
-    }
+// Math science
+const utils = {
+    // Sum an array
+    sum: arr => arr.reduce((acc, curr) => acc + curr, 0),
 
-    render() {
-        return (
-            <form onSubmit={this.handleSubmit}>
-                <input
-                    type="text"
-                    placeholder="GitHub username"
-                    required
-                    onChange={
-                        event => {
-                            this.setState({userName: event.target.value})
-                        }
-                    }
-                    value={this.state.userName}
-                />
-                <button>Add card</button>
-            </form>
-        );
-    }
-}
+    // create an array of numbers between min and max (edges included)
+    range: (min, max) => Array.from({ length: max - min + 1 }, (_, i) => min + i),
 
-class App extends React.Component {
+    // pick a random number between min and max (edges included)
+    random: (min, max) => min + Math.floor(Math.random() * (max - min + 1)),
 
-    state = {
-        profiles: [],
-    }
+    // Given an array of numbers and a max...
+    // Pick a random sum (< max) from the set of all available sums in arr
+    randomSumIn: (arr, max) => {
+        const sets = [[]];
+        const sums = [];
+        for (let i = 0; i < arr.length; i++) {
+            for (let j = 0, len = sets.length; j < len; j++) {
+                const candidateSet = sets[j].concat(arr[i]);
+                const candidateSum = utils.sum(candidateSet);
+                if (candidateSum <= max) {
+                    sets.push(candidateSet);
+                    sums.push(candidateSum);
+                }
+            }
+        }
+        return sums[utils.random(0, sums.length - 1)];
+    },
+};
 
-    addNewProfile = (profileData) => {
-        this.setState(prevState => ({
-            profiles: [...prevState.profiles, profileData]
-        }))
-    };
-
-    render() {
-        return (
-            <div>
-                <div className="header">{this.props.title}</div>
-                <Form onSubmit={this.addNewProfile}/>
-                <CardList profiles={this.state.profiles}/>
-            </div>
-        );
-    }
-}
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
     <React.StrictMode>
-        <App title={"The gitHubPage cards app"}/>
+        <StarMatch />
     </React.StrictMode>
 );
 
